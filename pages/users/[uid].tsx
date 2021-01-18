@@ -41,5 +41,10 @@ export default function UserShow() {
     // query.uid が変わった場合に再度処理をするよう、useEffect の第２引数も変えておきます。
   }, [query.uid])
 
-  return <div>{user ? user.name : 'ロード中...'}</div>
+  return (
+    <div>
+      <div>{user ? user.name : 'ロード中...'}</div>
+      <button className="btn btn-primary">ボタン</button>
+    </div>
+  )
 }
