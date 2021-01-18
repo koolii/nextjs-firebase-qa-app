@@ -14,6 +14,8 @@ export function useAuthentication() {
 
   // 何度も呼ばれてしまうため、useEffect()を使って一度だけにする
   useEffect(() => {
+    console.log('Start useEffect')
+
     if (user !== null) {
       return
     }
