@@ -52,6 +52,7 @@ export function useAuthentication() {
         const loginUser: User = {
           uid: user.uid,
           isAnonymous: user.isAnonymous,
+          name: '',
         }
         setUser(loginUser)
         createUserIfNotFound(loginUser)
