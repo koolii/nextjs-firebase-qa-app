@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, FormEvent } from 'react'
 import { useRouter } from 'next/router'
 import firebase from 'firebase/app'
 import { User } from '../../models/User';
@@ -18,6 +18,26 @@ export default function UserShow() {
   // useState(User)(); でundefinedで初期化も可能
   const [user, setUser] = useState<User>(null)
   const query = router.query as Query
+  const [body, setBody] = useState('')
+  const [isSending, setIsSending] = useState(false)
+
+  async function onSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    setIsSending(true);
+
+    // add()でfirestoreにデータを登録することでIDを自動生成してくれる
+    await firebase.firestore().collection('questions').add({
+      senderUid: firebase.auth().currentUser.uid,
+      receiverUid: user.uid,
+      body,
+      isReplied: false,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+    })
+
+    setBody('')
+    setIsSending(false)
+    alert('Sent a question :)')
+  }
 
   useEffect(() => {
     // SSR を考慮するために query に値がある場合だけ処理するように調整します
@@ -48,6 +68,31 @@ export default function UserShow() {
         <div className="text-center">
           <h1 className="h4">{user.name}さんのページ</h1>
           <div className="m-5">{user.name}さんに質問しよう！</div>
+          <div className="row justify-content-center mb-3">
+            <div className="col-12 col-md-6">
+              <form onSubmit={onSubmit}>
+                <textarea
+                  className="form-control"
+                  placeholder="おげんきですか？"
+                  rows={6}
+                  value={body}
+                  onChange={(e) => setBody(e.target.value)}
+                  required
+                />
+                <div className="m-3">
+                  {isSending ? (
+                    <div className="spinner-border text-secondary" role="status">
+                      <span className="visually-hidden">Loading...</span>
+                    </div>
+                  ) : (
+                    <button type="submit" className="btn btn-primary">
+                      質問を送信する
+                    </button>
+                  )}
+                </div>
+              </form>
+            </div>
+          </div>
         </div>
       )}
     </Layout>
