@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import firebase from 'firebase/app'
 import dayjs from 'dayjs'
 import { useAuthentication } from '../../hooks/authentication';
@@ -8,6 +8,8 @@ import Layout from '../../components/Layout';
 export default function Page() {
   const { user } = useAuthentication()
   const [questions, setQuestions] = useState<Question[]>([])
+  const [isPaginationFinished, setIsPaginationFinished] = useState(false)
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
 
   function createBaseQuery() {
     return firebase
@@ -24,15 +26,19 @@ export default function Page() {
       question.id = doc.id
       return question
     })
-    setQuestions(gotQuestions)
+    setQuestions(questions.concat(gotQuestions))
   }
 
   async function loadQuestions() {
     const snapshot = await createBaseQuery().get()
-    if (snapshot.empty) return
+    if (snapshot.empty) {
+      setIsPaginationFinished(true)
+      return
+    }
     appendQuestions(snapshot)
   }
 
+  // for infinite scroll
   async function loadNextQuestions() {
     if (questions.length === 0) return
     // orderBy を使っている場合
@@ -55,11 +61,34 @@ export default function Page() {
     loadQuestions()
   }, [process.browser, user])
 
+  // handler scrolling
+  function onScroll() {
+    if (isPaginationFinished) return
+
+    const container = scrollContainerRef.current
+    if (!container) return
+
+    const rect = container.getBoundingClientRect()
+    // containerの高さと画面サイズを比較、はみ出している場合は追加データを読み込む
+    // rect.top => container(div)までの高さ
+    // rect.height => containerの高さ
+    if (rect.top + rect.height > window.innerHeight) return
+
+    loadNextQuestions()
+  }
+
+  useEffect(() => {
+    window.addEventListener('scroll', onScroll)
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+    }
+  }, [questions, scrollContainerRef.current, isPaginationFinished])
+
   return (
     <Layout>
       <h1 className="h4">受け取った質問一覧</h1>
       <div className="row justify-content-center">
-        <div className="col-12 col-md-6">
+        <div className="col-12 col-md-6" ref={scrollContainerRef}>
           {questions.map((question) => (
             <div className="card my-3" key={question.id}>
               <div className="card-body">
