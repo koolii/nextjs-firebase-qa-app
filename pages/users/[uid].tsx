@@ -1,8 +1,10 @@
 import { useEffect, useState, FormEvent } from 'react'
 import { useRouter } from 'next/router'
 import firebase from 'firebase/app'
-import { User } from '../../models/User';
-import Layout from '../../components/Layout';
+import { toast } from 'react-toastify'
+import { User } from '../../models/User'
+import Layout from '../../components/Layout'
+
 
 type Query = {
   uid: string;
@@ -23,7 +25,7 @@ export default function UserShow() {
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    setIsSending(true);
+    setIsSending(true)
 
     // add()でfirestoreにデータを登録することでIDを自動生成してくれる
     await firebase.firestore().collection('questions').add({
@@ -36,13 +38,21 @@ export default function UserShow() {
 
     setBody('')
     setIsSending(false)
-    alert('Sent a question :)')
+    toast.success('Sent a question :)', {
+      position: 'bottom-left',
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    })
   }
 
   useEffect(() => {
     // SSR を考慮するために query に値がある場合だけ処理するように調整します
     // => SSR 時の１回だけ呼ばれ、ブラウザ表示時に何もしてくれないためユーザーの読み込みが行われません
-    if (query.uid === undefined) return;
+    if (query.uid === undefined) return
 
     async function loadUser() {
       const doc = await firebase
