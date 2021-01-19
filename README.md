@@ -12,3 +12,12 @@ ref: `pages/users/[uid].tsx`
 
 query に値がある場合だけ処理するように調整を実施することで
 SSR 時の 1 回だけ呼ばれ、ブラウザ表示時は何もしないようにする
+
+## Firebase
+
+### 無限スクロール
+
+ref: `pages/questions/received.tsx`
+
+orderBy を使っている場合、クエリに startAfter を追加することで
+現在取得済みの値以降のデータを取得することができます
