@@ -4,6 +4,23 @@
 
 便利な機能ですが、逆にサーバーサイドだけで利用すべき重要な認証情報などを同じやり方で環境変数に指定してしまうと情報漏えいになりますので気をつけましょう。
 
+### `import Link from next/link`
+
+Link タグは内側に a タグで囲ってあげる => WHY?
+※ おそらく Link タグだけだと Next.js 側だけで解釈されて、画面としてはリンクとして表現されていないのでは？
+=> 検証してみるとやはりそうだった
+
+Next.js < 9 では `as` の指定も必須となる
+
+```typescript
+// eg.
+<Link href="/dummy">
+  <a>
+  { ... }
+  </a>
+</Link>
+```
+
 ## SSR
 
 ### SSR 時の処理では query の値が存在しない
@@ -21,6 +38,18 @@ ref: `pages/questions/received.tsx`
 
 orderBy を使っている場合、クエリに startAfter を追加することで
 現在取得済みの値以降のデータを取得することができます
+
+### firestore でトランザクション
+
+ref: `pages/questions/[id].tsx`
+
+`runTransaction()` を使うこと
+複数のデータの CRUD 操作もトランザクション管理ができるようになる
+
+```typescript
+// t変数を利用することでトランザクション管理が可能
+await firebase.firestore().runTransaction(async (t) => {});
+```
 
 ## React
 
