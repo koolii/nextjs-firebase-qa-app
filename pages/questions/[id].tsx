@@ -18,6 +18,7 @@ export default function QuestionShow() {
   const [body, setBody] = useState('')
   const [question, setQuestion] = useState<Question>()
   const [answer, setAnswer] = useState<Answer>()
+  // const currentUser = firebase.auth().currentUser
 
   async function loadData(id: string) {
     if (!id) return
@@ -77,8 +78,11 @@ export default function QuestionShow() {
   }
 
   useEffect(() => {
+    if (!user) return
     loadData(query.id)
   }, [query.id])
+
+  // console.log(currentUser);
 
   return (
     <Layout>
