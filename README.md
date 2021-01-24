@@ -73,3 +73,11 @@ const rect = container.getBoundingClientRect();
 // rect.height => containerの高さ
 const isHigherThanWindow = divrect.top + rect.height > window.innerHeight;
 ```
+
+### SNS 連携
+
+ここはデータを useEffect を利用したクライアント側で取得する形ではなく、サーバーサイドで取得する形とします。なぜかと言うと、SNS で回答ページをシェアしてもらうときのために、meta タグをサーバー側で生成したいためです。
+
+回答表示機能的にはクライアント側で行う形で問題ありません。しかし、そのページを SNS にシェアすると、各種 SNS のクローラは該当ページのサーバーサイドで生成された HTML の meta タグを取得していきます。そのあとブラウザの処理側で meta タグを更新してもクローラ的には意味がありません。
+
+そのためシェアした内容を正確に SNS で表示したい場合には、サーバーサイドで meta タグを生成するように作成する必要があります。
