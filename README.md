@@ -84,6 +84,15 @@ const isHigherThanWindow = divrect.top + rect.height > window.innerHeight;
 
 ## OGP 画像
 
+meta タグに ogp 用の URL を指定します。これにより SNS でシェアした際にその URL が参照されて表示されます。
+ogp 用の URL は http から始まるフルの URL である必要があります
+
+Twitter Card Validator というページがあります。そこに URL を入力することで確認も可能です。
+https://cards-dev.twitter.com/validator
+※ Twitter で一度表示した OGP 用画像は Twitter 側でキャッシュされてしまい
+プログラムを更新してもしばらくは画像の変更が反映されません
+上記の Validator を利用することでキャッシュをすぐに削除してくれる効果もあります
+
 ### SNS 連携
 
 ここはデータを useEffect を利用したクライアント側で取得する形ではなく、サーバーサイドで取得する形とします。なぜかと言うと、SNS で回答ページをシェアしてもらうときのために、meta タグをサーバー側で生成したいためです。
